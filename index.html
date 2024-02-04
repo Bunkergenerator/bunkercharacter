@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html>
+<head>
+	 <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Генератор персонажей</title>
+    <style>label{font-family: Arial;}
+		a{font-family: Arial;}
+		</style>
+</head>
+<body>
+<div style="width: 650px; height: 300px; margin-left:100px; margin-top: 100px; background: lightgrey;">
+<br><br>
+<form id="characterForm" style="margin-left: 20px;">
+
+		<input type="checkbox">
+        <label for="profession">Профессия:</label>
+        <input type="text" id="profession" readonly><br><br>
+
+        <input type="checkbox">
+        <label for="gender">Био:</label>
+        <input style="width:70px;" type="text" id="gender" readonly>
+
+        <label for="age">, </label>
+        <input style="width:25px;" type="text" id="age" readonly> <a>лет, </a>
+
+		<label for="experience">в профессии уже</label>
+		<input style="width:25px;" type="text" id="experience" readonly> <a>лет</a>
+        
+        <br><br>
+        <input type="checkbox">
+        <label for="disease">Здоровье:</label>
+		<input type="text" id="health" readonly><br><br>
+
+		<input type="checkbox">
+		<label for="phobia">Фобия:</label>
+		<input style="width:450px;" type="text" id="phobia" readonly><br><br>
+
+		<input type="checkbox">
+		<label for="features">Особенности:</label>
+		<input style="width:400px;" type="text" id="features"><br><br><br>
+
+
+        <button type="button" id="generateButton" onclick="generateCharacter()">Сгенерировать персонажа</button>
+        <button style="margin-left: 10px;" type="button" id="generatest" onclick="generateStealth()">Сгенерировать вслепую</button>
+    </form>
+
+<script>
+
+var professions = [
+    'Коуч', 'Стример', 'Тиктокер', 'Блогер', 'Гинеколог', 'Проктолог', 'Наркобарон',
+    'Безработный', 'Кассир', 'Художник', 'Рэпер', 'Барабанщик', 'Режиссер', 'Таксист',
+    'Футболист', 'Бариста', 'Сексолог', 'Экстасенс', 'Скульптор', 'Сварщик', 'Аниматор',
+    'Повар', 'Стоматолог', 'Терапевт', 'Психолог', 'Пожарный', 'Полицейский', 'Ученый-физик',
+    'Ученый-химик', 'Военный', 'Летчик', 'Пилот', 'Оператор', 'Политик', 'Воспитатель',
+    'Преподаватель', 'Детектив', 'Шоколатье', 'Дегустатор', 'Диджей', 'Гитарист', 'Охранник',
+    'Юрист', 'Переводчик', 'Поэт', 'Композитор', 'Сомелье', 'Официант', 'Уролог', 'Менеджер',
+    'Президент', 'Диктор', 'Звукорежиссер', 'Охотник', 'Электрик', 'Инженер', 'IT-специалист',
+    'Библиотекарь', 'Бухгалтер', 'Экономист', 'Финансист', 'Копирайтер', 'Архитектор', 'Флейтист',
+    'Фотограф', 'Шаурмейкер', 'Свинопас', 'Пастух', 'Фермер', 'Биолог', 'Геолог', 'Актер',
+    'Разнорабочий', 'Сушист', 'Уборщик', 'Банкир', 'Бомж', 'Модель'
+];
+
+
+var genders = ['Мужчина', 'Женщина'];
+
+var diseases = [
+    'алкоголизм', 'лудомания', 'аллергия на животных', 'астма', 'биполярное расстройство', 'ветрянка', 'глухонемота',
+    'депрессия', 'диарея', 'косоглазие', 'межпозвоночная грыжа', 'наркомания', 'ожирение', 'отсутствие ноги',
+    'отсутствие руки', 'сахарный диабет', 'слепота', 'туберкулёз', 'шизофрения', 'язва желудка',
+    'паралич (ниже пояса)'
+];
+
+var phobias = [
+    'авиафобия (боязнь полётов на воздушном транспорте)',
+    'агорафобия (боязнь открытых мест)',
+    'агризоофобия (боязнь диких животных)',
+    'айхмофобия (боязнь острых предметов)',
+    'акрофобия (боязнь высоты)',
+    'алгофобия (боязнь боли)',
+    'анатидаефобия (боязнь, что где-то в мире есть утка, следящая за вами)',
+    'апифобия (боязнь пчёл и ос)',
+    'арахнофобия (боязнь пауков)',
+    'аулофобия (боязнь звуков флейты)',
+    'ахлуофобия (боязнь темноты)',
+    'блаттофобия (боязнь тараканов)',
+    'галеофобия (боязнь акул)',
+    'гемофобия (боязнь крови)',
+    'герпетофобия (боязнь пресмыкающихся)',
+    'гидрофобия (боязнь утопления)',
+    'гилофобия (боязнь леса)',
+    'гипнофобия (боязнь сна)',
+    'гоплофобия (боязнь оружия)',
+    'дентофобия (боязнь стоматологии)',
+    'децидофобия (боязнь принимать решения)',
+    'инсектофобия (боязнь насекомых)',
+    'кинофобия (боязнь собак)',
+    'клаустрофобия (боязнь замкнутого пространства)',
+    'компьютерофобия (боязнь компьютеров)',
+    'коулрофобия (боязнь клоунов)',
+    'мизофобия (боязнь заражения)',
+    'мусофобия (боязнь мышей и крыс)',
+    'орнитофобия (боязнь птиц)',
+    'пирофобия (боязнь огня)',
+    'психрофобия (боязнь холода)',
+    'радиофобия (боязнь радиации)',
+    'танатофобия (боязнь смерти)',
+    'топофобия (боязнь остаться одному в помещении)',
+    'трипанофобия (боязнь игл и уколов)',
+    'фазмофобия (боязнь призраков)',
+    'фармакофобия (боязнь принимать лекарства)',
+    'эйсоптрофобия (боязнь собственного отражения в зеркалах)',
+    'ятрофобия (боязнь врачей)'
+];
+
+var specialFeaturesList = [
+    'носит с собой аптечку', 'с собой имеет пистолет', 'прошел курсы выживания', 'однажды взломал пентагон',
+    'с собой грудной ребенок', 'с собой набор инструментов', 'умеет выращивать растения', 'дисциплинированный',
+    'с собой переносная электростанция', 'проходил курсы гинеколога', 'знает наизусть карту местности', 'с собой фонарик',
+    'выжил на необитаемом острове', 'выиграл чемпионат по легкой атлетике',
+    'выращивает коноплю на даче', 'отсидел 5 лет за кражу', 'может приготовить алкоголь из чего угодно',
+    'умеет танцевать стриптиз', 'бисексуален', 'подрабатывает в театре', 'с собой носит костюм клоуна',
+    'каннибал', 'гадает на картах', 'с собой набор для маникюра', 'с собой коллекция табакерок',
+    'подглядывает за людьми в раздевалке', 'сбежал из тюрьмы', 'убежденный холостяк', 'чайлдфри'
+];
+
+
+
+document.getElementById('generateButton').addEventListener('click', generateButton);
+
+
+function generateRandomAge() {
+    var minAge = 16;
+    var maxAge = 70;
+    return Math.floor(Math.random() * (maxAge - minAge + 1)) + minAge;
+}
+
+function generateStealth(){
+	 var randomProfession = professions[Math.floor(Math.random() * professions.length)];
+    var randomGender = genders[Math.floor(Math.random() * genders.length)];
+    var randomAge = generateRandomAge();
+    var isHealthy = Math.random() <= 0.4;
+    var randomHealthCondition = isHealthy
+        ? 'здоров'
+        : diseases[Math.floor(Math.random() * diseases.length)];
+
+    var randomPhobia = phobias[Math.floor(Math.random() * phobias.length)];
+    var randomExperience = Math.floor(Math.random() * (randomAge - 16 + 1));
+    var randomFeatures = [];
+    for (var i = 0; i < 2; i++) {
+        var feature = specialFeaturesList[Math.floor(Math.random() * specialFeaturesList.length)];
+        randomFeatures.push(feature);
+    }
+
+	var textOptions = [
+'замени профессию у любого игрока на случайную',
+'замени профессии у всех игроков на случайные',
+'избавься от одной из своих особенностей',
+'увеличь возраст любого игрока на 15 лет',
+'уменьшить возраст и стаж любого игрока на 15 лет',
+'вылечить фобию любого игрока',
+'заменить фобию любого игрока на случайную',
+'вылечить болезнь любого игрока',
+'заменить болезнь любого игрока на случайную',
+'изменить био выбранного игрока',
+'полностью изменить характеристики любого игроку'];
+    var dynamicText = textOptions[Math.floor(Math.random() * textOptions.length)];
+    var labelElement = document.querySelector('label[for="dynamicLabel"]');
+    var spanElement = document.getElementById('dynamicLabel');
+
+let combinedVariable 
+= "Профессия: " + randomProfession + "; " 
++ "Пол: " + randomGender + "; " 
++ "Возраст: " + randomAge + "; " 
++ "Стаж работы: " + randomExperience + "; " 
++ "Здоровье: " + randomHealthCondition + "; "
++ "Фобия: " + randomPhobia + "; "
++ "Особенности: " + randomFeatures + "; "
++ "Твоя карта действия: " + dynamicText + "; ";
+navigator.clipboard.writeText(combinedVariable).then(function() {
+    console.log('Текст успешно скопирован в буфер обмена');
+}).catch(function(err) {
+    console.error('Ошибка копирования: ', err);
+});
+}
+
+function generateCharacter() {
+    var randomProfession = professions[Math.floor(Math.random() * professions.length)];
+    var randomGender = genders[Math.floor(Math.random() * genders.length)];
+    var randomAge = generateRandomAge();
+    var isHealthy = Math.random() <= 0.4;
+    var randomHealthCondition = isHealthy
+        ? 'здоров'
+        : diseases[Math.floor(Math.random() * diseases.length)];
+
+    var randomPhobia = phobias[Math.floor(Math.random() * phobias.length)];
+    var randomExperience = Math.floor(Math.random() * (randomAge - 16 + 1));
+    var randomFeatures = [];
+    for (var i = 0; i < 2; i++) {
+        var feature = specialFeaturesList[Math.floor(Math.random() * specialFeaturesList.length)];
+        randomFeatures.push(feature);
+    }
+
+	var textOptions = [
+'замени профессию у любого игрока на случайную',
+'замени профессии у всех игроков на случайные',
+'избавься от одной из своих особенностей',
+'увеличь возраст любого игрока на 15 лет',
+'уменьшить возраст и стаж любого игрока на 15 лет',
+'вылечить фобию любого игрока',
+'заменить фобию любого игрока на случайную',
+'вылечить болезнь любого игрока',
+'заменить болезнь любого игрока на случайную',
+'изменить био выбранного игрока',
+'полностью изменить характеристики любого игроку'];
+    var dynamicText = textOptions[Math.floor(Math.random() * textOptions.length)];
+    var labelElement = document.querySelector('label[for="dynamicLabel"]');
+    var spanElement = document.getElementById('dynamicLabel');
+    labelElement.textContent = 'Твоя карта действия: ';
+    spanElement.textContent = dynamicText;
+
+
+    document.getElementById("profession").value = randomProfession;
+    document.getElementById("gender").value = randomGender;
+    document.getElementById("age").value = randomAge;
+    document.getElementById("health").value = randomHealthCondition;
+    document.getElementById("phobia").value = randomPhobia;
+   	document.getElementById("features").value = randomFeatures.join(', ');
+	document.getElementById("experience").value = randomExperience;
+
+   // document.getElementById("generateButton").style.display = "none";
+}
+
+function generateJob(){
+	var randomProfession = professions[Math.floor(Math.random() * professions.length)];
+	 document.getElementById("profession").value = randomProfession;
+}
+
+function generateBio(){
+	var randomGender = genders[Math.floor(Math.random() * genders.length)];
+    var randomAge = generateRandomAge();
+    var randomExperience = Math.floor(Math.random() * (randomAge - 16 + 1));
+    document.getElementById("gender").value = randomGender;
+    document.getElementById("age").value = randomAge;
+    document.getElementById("experience").value = randomExperience;
+}
+
+function ageplus(){
+
+	let ageP = parseInt(document.getElementById("age").value);
+	var newage = ageP + 15;
+	document.getElementById("age").value = newage;
+
+}
+
+function ageminus(){
+	let ageM = parseInt(document.getElementById("age").value);
+	let expM = parseInt(document.getElementById("experience").value);
+	var newage = ageM - 15;
+	if(newage<16){
+		var newage = 16;
+	}
+	var newexp = expM - 15;
+	if(newexp<0){
+		var newexp = 0;
+	}
+	document.getElementById("age").value = newage;
+	document.getElementById("experience").value = newexp;
+}
+
+function noscare(){
+	document.getElementById("phobia").value = "нет фобий";
+}
+
+function changescare(){
+	var randomPhobia = phobias[Math.floor(Math.random() * phobias.length)];
+	document.getElementById("phobia").value = randomPhobia;
+}
+
+function nodicease(){
+	document.getElementById("health").value = "здоров";
+}
+
+function changedicease(){
+	var isHealthy = Math.random() <= 0.4;
+    var randomHealthCondition = isHealthy
+        ? 'здоров'
+        : diseases[Math.floor(Math.random() * diseases.length)];
+    document.getElementById("health").value = randomHealthCondition;
+}
+</script>
+</div>
+
+<div style="width: 650px; height: 200px; margin-left:100px; margin-top: 50px; background: lightgrey;">
+	<br><br>
+<a style="margin-left: 20px;">
+	<input type="checkbox">
+<label for="dynamicLabel">Твоя карта действия: </label>
+<span id="dynamicLabel"></span>
+</a><br><br><br>
+
+		<button style="margin-left: 20px;" type="button" onclick="generateJob()">Изменить профессию</button> 
+		<button style="margin-left: 10px;" type="button" onclick="generateBio()">Изменить био</button>
+		<button style="margin-left: 10px;" type="button" onclick="ageplus()">Постареть на 15 лет</button>
+		<br>
+		<button style="margin-top: 10px; margin-left: 20px;" type="button" onclick="ageminus()">Помолодеть на 15 лет</button>
+		<button style="margin-top: 10px; margin-left: 10px;" type="button" onclick="noscare()">Вылечить фобию</button>
+		<button style="margin-top: 10px; margin-left: 10px;" type="button" onclick="changescare()">Заменить фобию</button>
+		<br>
+		<button style="margin-top: 10px; margin-left: 20px;" type="button" onclick="nodicease()">Вылечить болезнь</button>
+		<button style="margin-top: 10px; margin-left: 10px;" type="button" onclick="changedicease()">Заменить болезнь</button>
+</div>
+
+</body>
+</html>
